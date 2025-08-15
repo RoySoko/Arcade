@@ -4,27 +4,22 @@
   <meta charset="utf-8" />
   <title>Arcade 1</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <link rel="stylesheet" href="style.css" />
+  <meta name="author" content="Amanda Sokolowski" />
+  <link rel="stylesheet" href="css/styles.css" />
 </head>
 <body>
   <main class="wrap">
     <h1>What would you like to play?</h1>
 
     <div class="buttons">
-      <!-- Arrow Function -->
       <button onclick="playGuess();">Guessing Game</button>
-
-      <!-- Function Expression -->
       <button onclick="playEightBall();">Consult the Oracle</button>
-
-      <!-- Function Declaration -->
       <button onclick="playBNH();">Bear, Ninja, Hunter</button>
     </div>
 
-    <!-- Only used when the ENTIRE playing session ends -->
     <div id="endZone" class="end-zone" aria-live="polite"></div>
   </main>
 
-  <script src="script.js" defer></script>
+  <script src="js/script.js" defer></script>
 </body>
 </html>
