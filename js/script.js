@@ -1,9 +1,7 @@
-
-// Arcade 1 — All variables instantiated at top
 let endZoneEl = null;
 let farewellShown = false;
 
-// 8-Ball answers 
+// Oracle answers
 const eightBallResponses = [
   "Definitely yes.",
   "Most likely.",
@@ -15,15 +13,28 @@ const eightBallResponses = [
   "Outlook not so good."
 ];
 
-// BNH scoreboard 
+// Badge for each Oracle answer
+const eightBallBadges = {
+  "Definitely yes.": "Lucky Star",
+  "Most likely.": "Hot Streak",
+  "Ask again later.": "Mystery Fog",
+  "Cannot predict now.": "Mystery Fog",
+  "Don't count on it.": "Nope",
+  "Very doubtful.": "Skeptic",
+  "Signs point to yes.": "Green Light",
+  "Outlook not so good.": "Worst Day Possible"
+};
+
+// BNH score
 let bnhWins = 0, bnhLosses = 0, bnhTies = 0;
 
-// Guessing Game state
+// Guessing game state
 let guessTarget = null, guessAttempts = 0;
 
 window.addEventListener('DOMContentLoaded', () => {
   endZoneEl = document.getElementById('endZone');
 });
+
 
 /** Ask y/n with validation; returns true for yes, false for no/cancel. */
 function askYesNo(message) {
@@ -37,9 +48,9 @@ function askYesNo(message) {
   }
 }
 
-/** After any Single Game ends, decide whether to keep the Playing session going. */
+/** After any Single Game ends, decide if the Playing session continues. */
 function finalizeSingleGame() {
-  
+  // Exact wording from assignment (note two spaces before y/n)
   const pickAnother = (askYesNo('Would you like to pick another game to play?  y/n') ? true : false);
   if (pickAnother) {
     alert('Okay! Click another button to launch a game.');
@@ -55,7 +66,7 @@ function finalizeSingleGame() {
   }
 }
 
-/** Random int in [min, max] */
+
 function randInt(min, max) {
   return Math.floor(Math.random() * (max - min + 1)) + min;
 }
@@ -70,12 +81,14 @@ function normalizeBNH(s) {
   return null;
 }
 
-// 1) Guessing Game — Arrow Function
+
+
+// 1) Guessing Game 
 window.playGuess = () => {
   let keepPlaying = true;
 
   while (keepPlaying) {
-    // Start one Single Game
+    // Start a Single Game
     guessTarget = randInt(1, 10);
     guessAttempts = 0;
 
@@ -85,7 +98,10 @@ window.playGuess = () => {
       if (raw === null) { alert('You cancelled. Ending this game.'); keepPlaying = false; break; }
 
       const val = Number(raw);
-      if (!Number.isInteger(val) || val < 1 || val > 10) { alert('Please enter a WHOLE number between 1 and 10.'); continue; }
+      if (!Number.isInteger(val) || val < 1 || val > 10) {
+        alert('Please enter a WHOLE number between 1 and 10.');
+        continue;
+      }
 
       guessAttempts++;
       if (val === guessTarget) {
@@ -97,7 +113,7 @@ window.playGuess = () => {
 
     if (!keepPlaying) break;
 
-    // exit the loop 
+    
     keepPlaying = (askYesNo('Would you like to keep playing this game? y/n') ? true : false);
   }
 
@@ -105,20 +121,41 @@ window.playGuess = () => {
 };
 
 // 2) Consult the Oracle 
+
+
 window.playEightBall = function () {
   let keepPlaying = true;
+  const tally = {}; 
 
   while (keepPlaying) {
     const q = prompt('Ask a yes-or-no question for the Oracle. (Cancel to stop this game.)');
     if (q === null) { alert('You cancelled. Ending this game.'); keepPlaying = false; break; }
 
-    const trimmed = q.trim();
-    if (!trimmed) { alert('Please enter a question (not empty).'); continue; }
+    const question = q.trim();
+    if (!question) { alert('Please enter a question (not empty).'); continue; }
 
-    const reply = eightBallResponses[randInt(0, eightBallResponses.length - 1)];
-    alert(`You asked: "${trimmed}"\nThe Oracle says: ${reply}`);
+    // Oracle speaks
+    const answer = eightBallResponses[randInt(0, eightBallResponses.length - 1)];
+    const badgeBase = eightBallBadges[answer] || 'Mystery';
+    const badgeText = `You win the ${badgeBase} badge!`;
 
+    // Update tally
+    tally[badgeBase] = (tally[badgeBase] || 0) + 1;
 
+    // Build tally lines
+    const tallyLines = Object.entries(tally)
+      .map(([b, c]) => `• ${b} badge: ${c}`)
+      .join('\n');
+
+    // Results
+    alert(
+      `You asked: "${question}"\n` +
+      `Oracle: ${answer}\n` +
+      `${badgeText}\n\n` +
+      `Badge tally this session:\n${tallyLines}`
+    );
+
+    
     keepPlaying = (askYesNo('Would you like to keep playing this game? y/n') ? true : false);
   }
 
@@ -127,7 +164,7 @@ window.playEightBall = function () {
 
 // 3) Bear, Ninja, Hunter 
 function playBNH() {
-  // Ask for name 
+  
   let playerName = prompt('Welcome to Bear, Ninja, Hunter! Please enter your name to get started:');
   if (playerName === null) { alert('You cancelled.'); finalizeSingleGame(); return; }
   playerName = playerName.trim();
@@ -135,7 +172,7 @@ function playBNH() {
 
   alert(`Hi ${playerName}! Let's Play!!`);
 
-  // Reset scoreboard for this Playing session
+  // Reset scoreboard 
   bnhWins = 0; bnhLosses = 0; bnhTies = 0;
 
   let keepPlaying = true;
@@ -170,7 +207,6 @@ function playBNH() {
       `${outcome}\n\n` +
       `Wins: ${bnhWins}  Losses: ${bnhLosses}  Ties: ${bnhTies}`
     );
-
     keepPlaying = (askYesNo('Would you like to keep playing this game? y/n') ? true : false);
   }
 
